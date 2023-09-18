@@ -1,0 +1,7 @@
+class EuphyLang {
+    var a = 8
+
+    EuphyLang() {
+        a = 10
+    }
+}
