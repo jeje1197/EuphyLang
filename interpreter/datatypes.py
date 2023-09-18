@@ -49,13 +49,14 @@ class StringValue(Value):
         return self.value
     
 class FunctionValue(Value):
-    def __init__(self, name, parameters, return_type, statements, is_native) -> None:
+    def __init__(self, name, parameters, return_type, statements, is_native, native_function=None) -> None:
         super().__init__('function')
         self.name = name
         self.parameters = parameters
         self.return_type = return_type
         self.statements = statements
         self.is_native = is_native
+        self.native_function = native_function
 
     def is_truthy(self):
         return True

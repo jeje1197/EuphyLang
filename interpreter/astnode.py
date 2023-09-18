@@ -151,6 +151,16 @@ class FunctionCallNode(AstNode):
 
     def __repr__(self) -> str:
         return f'(FunctionCallNode {self.node_to_call} {self.args})'
+    
+class ClassDeclarationNode(AstNode):
+    def __init__(self, name, inheritance_list, statements) -> None:
+        super().__init__()
+        self.name = name
+        self.inheritance_list = inheritance_list
+        self.statements = statements
+
+    def __repr__(self) -> str:
+        return f'(ClassDeclarationNode {self.name} : {self.inheritance_list})'
 
 class ListNode(AstNode):
     def __init__(self, element_nodes) -> None:

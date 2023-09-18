@@ -7,11 +7,18 @@ list l = [3.3, 5.2]
 
 boolean b = 5 or 6
 
-if (list) {
+class EuphyLang : Object {
+    dynamic player1 = "This is a dynamically-typed variable"
+    string player2 = "This is a statically-typed variable"
 
-}
+    dynamic main() {
+        print("This is how")
 
-table t = {
-    'My Game': 8,
-    
+        print("Enter your name: ")
+        string name = input()
+
+        print("Your name is: " + name)
+    }
+
+
 }

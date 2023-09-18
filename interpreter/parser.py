@@ -84,6 +84,8 @@ class Parser:
             return self.print_statement()
         elif self.matchSeparator('{'):
             return self.code_block()
+        elif self.match(TOKEN_IDENTIFIER) and self.match_lookahead(1, TOKEN_OPERATOR, '='):
+            return self.variable_assignment()
         elif self.matchKeyword('if'):
             return self.if_statement()
         elif self.matchKeyword('while'):
@@ -92,9 +94,10 @@ class Parser:
             return self.break_statement()
         elif self.matchKeyword('continue'):
             return self.continue_statement()
+        elif self.matchKeyword('class'):
+            return self.class_declaration()
 
-        elif self.match(TOKEN_IDENTIFIER) and self.match_lookahead(1, TOKEN_OPERATOR, '='):
-            return self.variable_assignment()
+        
         
         revert_point = self.index
         data_type = self.parse_type()
@@ -270,7 +273,37 @@ class Parser:
         if not self.matchSeparator('}'):
             raise ParseException(f'Expected \'{"}"}\' at {self.cur.position}')
         self.get_next()
-        return FunctionDeclarationNode(name_token.value, parameters, return_type, statements)
+        return FunctionDeclarationNode(name_token.value, parameters, return_type, statements).set_position(name_token.position)
+    
+    def class_declaration(self):
+        token = self.cur
+        self.get_next()
+
+        if not self.match(TOKEN_IDENTIFIER):
+            raise ParseException(f'Expected identifier after type at {self.cur.position}')
+        name_token = self.cur
+        self.get_next()
+
+        # Inheritance
+        inheritance_list = []
+        if self.matchSeparator(':'):
+            self.get_next()
+
+            if not self.matchSeparator('['):
+                raise ParseException(f'Expected inheritance list at {self.cur.position}')
+            inheritance_list = self.list_expression()
+
+        if not self.matchSeparator('{'):
+            raise ParseException(f'Expected \'{"{"}\' at {self.cur.position}')
+        self.get_next()
+
+        statements = self.statements()
+
+        if not self.matchSeparator('}'):
+            raise ParseException(f'Expected \'{"}"}\' at {self.cur.position}')
+        self.get_next()
+        return ClassDeclarationNode(name_token.value, inheritance_list, statements).set_position(token.position)
+
     
     def expression(self):
         return self.logical()

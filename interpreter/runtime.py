@@ -1,6 +1,7 @@
 from .exception import RuntimeException
 from .astnode import *
 from .datatypes import *
+from .native_functions import *
 from .symboltable import SymbolTable
 from .container import Container
 
@@ -26,6 +27,7 @@ class Runtime:
 
     def execute(self, ast):
         global_symbol_table = SymbolTable()
+        global_symbol_table.insert('println', print_function)
         for node in ast:
             self.visit(node, global_symbol_table)
         
@@ -165,18 +167,10 @@ class Runtime:
             container = Container(parameter_type, value)
             new_symbol_table.insert(key, container)
 
+        if function.is_native:
+            return function.native_function(new_symbol_table)
+
         # Execute statements
         for statement in function.statements:
             self.visit(statement, new_symbol_table)
         return NoneValue()
-        
-        
-
-        
-
-
-    # def visit_ListNode(self, node: ListNode, symbol_table: SymbolTable):
-    #     list_object = ListValue()
-    #     list
-
-    # def visit_

@@ -15,7 +15,9 @@ KEYWORDS = [
 
     'if', 'else', 'for', 'while', 'break', 'continue',
 
-    'true', 'false', 'print'
+    'true', 'false', 'print',
+
+    'class'
 ]
 TWO_CHAR_OPERATORS = ['<=', '>=', '==', '!=', '&&', '||']
 SINGLE_CHAR_OPERATORS = ['+', '-', '*', '/', '%', '<', '>', '=', '.']
