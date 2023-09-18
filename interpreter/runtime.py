@@ -17,6 +17,15 @@ class Runtime:
     
     def visit_Error(self, node, symbol_table):
         raise RuntimeError(f"Visit method for {type(node).__name__} has not been implemented yet.")
+    
+    def visit_UnaryOpNode(self, node, symbol_table):
+        pass
+
+    def visit_BinaryOpNode(self, node, symbol_table):
+        pass
+    
+    def visit_BooleanNode(self, node, symbol_table):
+        return BooleanValue(node.value)
         
     def visit_NumberNode(self, node, symbol_table):
         return NumberValue(node.value)

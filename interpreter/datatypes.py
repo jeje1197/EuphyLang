@@ -2,6 +2,14 @@ class Value:
     def __init__(self) -> None:
         pass
 
+class BooleanValue(Value):
+    def __init__(self, value) -> None:
+        super().__init__()
+        self.value = value
+    
+    def __repr__(self) -> str:
+        return f'{self.value}'
+
 class NumberValue(Value):
     def __init__(self, value) -> None:
         super().__init__()

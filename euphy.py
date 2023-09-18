@@ -4,33 +4,45 @@ from interpreter.runtime import Runtime
 
 def repl():
     while True:
-        user_input = input("Euphy>")
+        user_input = input('Euphy>')
 
         if user_input:
             run('Console', user_input)
 
 def welcome():
-    message = "Welcome to Euphy v1.0"
-    message += "Type"
+    message = 'Welcome to Euphy v1.0'
+    message += 'Type "info" for more infomation.'
     print(message)
 
 def run(file_name, code):
     lexer = Lexer(file_name, code)
-    tokens = lexer.generate_tokens()
+    tokens = []
+    try:
+        tokens = lexer.generate_tokens()
+    except Exception as e:
+        print(e)
 
     if not tokens: return
-    # for token in tokens:
-    #     print(token)
+    for token in tokens:
+        print(token)
 
     parser = Parser(tokens)
-    ast = parser.generate_ast()
+    ast = []
+
+    try:
+        ast = parser.generate_ast()
+    except Exception as e:
+        print(e)
 
     if not ast: return
-    # for node in ast:
-    #     print(node)
+    for node in ast:
+        print(node)
 
     runtime = Runtime()
-    runtime.execute(ast)
+    try:
+        runtime.execute(ast)
+    except Exception as e:
+        print(e)
 
 
 if __name__ == '__main__':

@@ -4,13 +4,20 @@ from .token import *
 from .position import Position
 from .exception import ParseException
 
-DIGITS = string.digits
+WHITESPACE = ['\n', '\t', '\r', ' ']
+DIGITS = '0123456789'
+DIGITS_AND_DECIMAL = DIGITS + '.'
 BEGIN_SYMBOL_CHARACTERS = string.ascii_letters + '_'
 SYMBOL_CHARACTERS = string.ascii_letters + '_' + string.digits
 
-KEYWORDS = ['print']
+KEYWORDS = [
+    'boolean', 'number', 'string', 'list', 'dynamic',
+
+
+    'const', 'true', 'false', 'print'
+]
 TWO_CHAR_OPERATORS = ['<=', '>=', '==', '!=', '&&', '||']
-SINGLE_CHAR_OPERATORS = ['+', '-', '*', '/', '%', '<', '>', '.']
+SINGLE_CHAR_OPERATORS = ['+', '-', '*', '/', '%', '<', '>', '=', '.']
 SEPARATORS = [',', ':', ';', '(', ')', '{', '}', '[', ']']
 
 ESCAPE_CHARS = {
@@ -27,6 +34,7 @@ class Lexer:
         self.index = -1
         self.cur = None
 
+        self.get_next()
         self.tokens = []
 
     def has_next(self, steps_ahead=1) -> bool:
@@ -34,7 +42,8 @@ class Lexer:
     
     def get_next(self) -> str:
         if self.has_next():
-            if self.cur == '\n': self.position.advance()
+            if self.cur == '\n': 
+                self.position.advance()
             self.index += 1
             self.cur = self.code[self.index]
         else:
@@ -53,11 +62,13 @@ class Lexer:
     def generate_tokens(self) -> list[Token]:
         self.tokens = []
 
-        while (self.has_next()):
-            cur = self.get_next()
+        while (self.cur):
+            cur = self.cur
             next_two = self.cur + self.lookahead()
 
-            if next_two == '//': # Scan comments
+            if cur in WHITESPACE:
+                self.get_next()
+            elif next_two == '//': # Scan comments
                 self.skip_comment()
             elif cur in DIGITS: # Scan number
                 self.scan_number()
@@ -82,12 +93,13 @@ class Lexer:
     def scan_number(self) -> None:
         number_literal = ''
         decimal_count = 0
-        while self.cur and (self.cur in DIGITS or self.cur == '.'):
+        while self.cur and self.cur in DIGITS_AND_DECIMAL:
             if self.cur == '.':
                 if decimal_count == 1: break
                 decimal_count += 1
             number_literal += self.cur
             self.get_next()
+        print (self.cur)
         self.create_token(TOKEN_NUMBER, number_literal)
 
     def scan_string(self) -> None:

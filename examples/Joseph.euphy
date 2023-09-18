@@ -1,4 +1,8 @@
-var a = 8;
-string b = 8
+dynamic name = input()
 
-print 2(&)7
+number a = 10
+string b = 10
+
+list<number> l = [3.3, 5.2]
+
+boolean b = 5 or 6
