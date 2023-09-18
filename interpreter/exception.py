@@ -1,4 +1,4 @@
-class Exception:
+class Exception(BaseException):
     def __init__(self, message) -> None:
         self.message = message
     
@@ -8,3 +8,7 @@ class Exception:
 class ParseException(Exception):
     def __init__(self, message) -> None:
         super().__init__(f'Parsing Exception: {message}')
+
+class RuntimeException(Exception):
+    def __init__(self, message) -> None:
+        super().__init__(f'Runtime Exception: {message}')

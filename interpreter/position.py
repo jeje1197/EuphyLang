@@ -12,4 +12,4 @@ class Position:
         return position
     
     def __repr__(self) -> str:
-        return f' line {self.line} in {self.file_name}'
+        return f'line {self.line} in {self.file_name}'

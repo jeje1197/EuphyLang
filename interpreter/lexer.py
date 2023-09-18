@@ -1,6 +1,6 @@
 import string
 
-from .token import Token
+from .token import *
 from .position import Position
 from .exception import ParseException
 
@@ -8,10 +8,10 @@ DIGITS = string.digits
 BEGIN_SYMBOL_CHARACTERS = string.ascii_letters + '_'
 SYMBOL_CHARACTERS = string.ascii_letters + '_' + string.digits
 
-KEYWORDS = []
-TWO_CHAR_OPERATORS = []
-SINGLE_CHAR_OPERATORS = []
-SEPARATORS = []
+KEYWORDS = ['print']
+TWO_CHAR_OPERATORS = ['<=', '>=', '==', '!=', '&&', '||']
+SINGLE_CHAR_OPERATORS = ['+', '-', '*', '/', '%', '<', '>', '.']
+SEPARATORS = [',', ':', ';', '(', ')', '{', '}', '[', ']']
 
 ESCAPE_CHARS = {
     'n': '\n',
@@ -19,13 +19,6 @@ ESCAPE_CHARS = {
     'r': '\r',
     '\\': '\\'
 }
-
-TOKEN_NUMBER = 'number'
-TOKEN_STRING = 'string'
-TOKEN_KEYWORD = 'keyword'
-TOKEN_IDENTIFIER = 'identifier'
-TOKEN_OPERATOR = 'operator'
-TOKEN_SEPARATOR = 'separator'
 
 class Lexer:
     def __init__(self, file_name, code) -> None:
