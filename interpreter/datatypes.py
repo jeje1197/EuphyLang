@@ -48,6 +48,28 @@ class StringValue(Value):
     def __repr__(self) -> str:
         return self.value
     
+class FunctionValue(Value):
+    def __init__(self, name, parameters, return_type, statements, is_native) -> None:
+        super().__init__('function')
+        self.name = name
+        self.parameters = parameters
+        self.return_type = return_type
+        self.statements = statements
+        self.is_native = is_native
+
+    def is_truthy(self):
+        return True
+
+    def __repr__(self) -> str:
+        if len(self.parameters) == 0:
+            return f'<function {self.name} -> {self.return_type}>'
+
+        signature = ''
+        for i in range(len(self.parameters)):
+            signature += self.parameters[i][0]
+        signature += f' -> {self.return_type}'
+        return f'<function {self.name} {signature}>'
+    
 class ListValue(Value):
     def __init__(self) -> None:
         super().__init__()

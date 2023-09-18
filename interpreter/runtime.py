@@ -69,7 +69,7 @@ class Runtime:
         return None
     
     def visit_VariableDeclarationNode(self, node: VariableDeclarationNode, symbol_table: SymbolTable):
-        if symbol_table.find(node.name):
+        if symbol_table.contains_locally(node.name):
             raise RuntimeException(f'\'{node.name}\' is already declared in scope at {node.position}')
         
         declared_type = node.data_type
@@ -121,18 +121,34 @@ class Runtime:
     
     def visit_BreakNode(self, node: BreakNode, symbol_table: SymbolTable):
         self.should_break = True
+        return None
 
     def visit_ContinueNode(self, node: ContinueNode, symbol_table: SymbolTable):
         self.should_continue = True
+        return None
+
+    def visit_FunctionDeclarationNode(self, node: FunctionDeclarationNode, symbol_table: SymbolTable):
+        if symbol_table.contains_locally(node.name):
+            raise RuntimeException(f'\'{node.name}\' is already declared in scope at {node.position}')
+
+        discovered_parameters = set()
+        for i in range(len(node.parameters)):
+            parameter_name = node.parameters[i][1]
+            if parameter_name in discovered_parameters:
+                raise RuntimeException(f'\'{parameter_name}\' is already declared in function parameters at {node.position}')
+            discovered_parameters.add(parameter_name)
+        
+        function = FunctionValue(node.name, node.parameters, node.return_type, node.statements, False)
+        container = Container('function', function)
+        symbol_table.insert(node.name, container)
+        return None
+    
+    def visit_FunctionCallNode(self, node: FunctionDeclarationNode, symbol_table: SymbolTable):
+        pass
+
 
     # def visit_ListNode(self, node: ListNode, symbol_table: SymbolTable):
     #     list_object = ListValue()
     #     list
 
     # def visit_
-    
-    
-
-        
-
-

@@ -99,8 +99,8 @@ class Parser:
         revert_point = self.index
         data_type = self.parse_type()
         if data_type and self.match(TOKEN_IDENTIFIER):
-            if self.match_lookahead(TOKEN_SEPARATOR, '('):
-                return self.function_declaration()
+            if self.match_lookahead(1, TOKEN_SEPARATOR, '('):
+                return self.function_declaration(data_type)
             return self.variable_declaration(data_type)
         else:
             self.reverse(revert_point)
@@ -219,8 +219,49 @@ class Parser:
     def function_declaration(self, return_type):
         if not self.match(TOKEN_IDENTIFIER):
             raise ParseException(f'Expected identifier after type at {self.cur.position}')
-        identifier_token = self.cur
+        name_token = self.cur
         self.get_next()
+
+        if not self.matchSeparator('('):
+            raise ParseException(f'Expected \'(\' at {self.cur.position}')
+        self.get_next()
+
+        parameters = []
+        data_type = self.parse_type()
+        if data_type:
+            if not self.match(TOKEN_IDENTIFIER):
+                raise ParseException(f'Expected identifier after type at {self.cur.position}')
+            parameter_name_token = self.cur
+            self.get_next()
+            parameters.append([data_type, parameter_name_token.value])
+
+            while self.matchSeparator(','):
+                self.get_next()
+            
+                data_type = self.parse_type()
+                if not data_type:
+                    raise ParseException(f'Expected type after \',\' at {self.cur.position}')
+                
+                if not self.match(TOKEN_IDENTIFIER):
+                    raise ParseException(f'Expected identifier after type at {self.cur.position}')
+                parameter_name_token = self.cur
+                self.get_next()
+                parameters.append([data_type, parameter_name_token.value])
+            
+        if not self.matchSeparator(')'):
+            raise ParseException(f'Expected \')\' at {self.cur.position}')
+        self.get_next()
+
+        if not self.matchSeparator('{'):
+            raise ParseException(f'Expected \'{"{"}\' at {self.cur.position}')
+        self.get_next()
+
+        statements = self.statements()
+
+        if not self.matchSeparator('}'):
+            raise ParseException(f'Expected \'{"}"}\' at {self.cur.position}')
+        self.get_next()
+        return FunctionDeclarationNode(name_token.value, parameters, return_type, statements)
     
     def expression(self):
         return self.logical()

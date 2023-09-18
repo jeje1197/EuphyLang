@@ -3,6 +3,9 @@ class SymbolTable:
         self.symbols = {}
         self.parent = parent
 
+    def contains_locally(self, key):
+        return key in self.symbols
+
     def find(self, key):
         table = self
         while table:

@@ -131,6 +131,26 @@ class ContinueNode(AstNode):
 
     def __repr__(self) -> str:
         return f'(ContinueNode)'
+    
+class FunctionDeclarationNode(AstNode):
+    def __init__(self, name, parameters: list[list], return_type, statements) -> None:
+        super().__init__()
+        self.name = name
+        self.parameters = parameters
+        self.return_type = return_type
+        self.statements = statements
+
+    def __repr__(self) -> str:
+        return f'(FunctionDeclarationNode {self.return_type} {self.name} {self.parameters} {self.statements})'
+    
+class FunctionCallNode(AstNode):
+    def __init__(self, node_to_call, args: list) -> None:
+        super().__init__()
+        self.node_to_call = node_to_call
+        self.args = args
+
+    def __repr__(self) -> str:
+        return f'(FunctionCallNode {self.node_to_call} {self.args})'
 
 class ListNode(AstNode):
     def __init__(self, element_nodes) -> None:

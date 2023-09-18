@@ -1,7 +1,7 @@
 class Position:
     def __init__(self, file_name) -> None:
         self.file_name = file_name
-        self.line = 0
+        self.line = 1
 
     def advance(self):
         self.line += 1
