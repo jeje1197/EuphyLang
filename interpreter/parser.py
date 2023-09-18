@@ -34,7 +34,7 @@ class Parser:
         if not value: return self.cur.type == type
         return self.cur.type == type and self.cur.value == value
     
-    def match_lookahead(self, steps_ahead, type=None, value=None):
+    def match_lookahead(self, steps_ahead=1, type=None, value=None):
         token = self.lookahead(steps_ahead)
         if not token: return False
         if not value: return token.type == type
@@ -79,17 +79,25 @@ class Parser:
     def statement(self):
         if self.matchKeyword('print'):
             return self.print_statement()
-        elif self.match(TOKEN_IDENTIFIER) and self.match_lookahead(TOKEN_OPERATOR, '='):
+        elif self.match(TOKEN_IDENTIFIER) and self.match_lookahead(1, TOKEN_OPERATOR, '='):
             return self.variable_assignment()
         
         revert_point = self.index
         data_type = self.parse_type()
-        if data_type and self.match(TOKEN_IDENTIFIER) and self.match_lookahead(1, TOKEN_OPERATOR, '='):
+        if data_type and self.match(TOKEN_IDENTIFIER):
             return self.variable_declaration(data_type)
         else:
             self.reverse(revert_point)
 
         return None
+    
+    def print_statement(self) -> PrintNode:
+        token = self.cur
+        self.get_next()
+
+        expression = self.expression()
+        if not expression: raise ParseException(f'Expected expression at {token.position}')
+        return PrintNode(expression).set_position(token.position)
     
     def parse_type(self):
         data_type = ''
@@ -102,7 +110,7 @@ class Parser:
     
     def variable_declaration(self, data_type):
         if not self.match(TOKEN_IDENTIFIER):
-            raise ParseException(f'Expected identifier after type at {token.position}')
+            raise ParseException(f'Expected identifier after type at {self.cur.position}')
         identifier_token = self.cur
         self.get_next()
 
@@ -116,6 +124,7 @@ class Parser:
 
     def variable_assignment(self):
         identifier_token = self.cur
+        self.get_next()
 
         if not self.matchOperator('='):
             raise ParseException(f'Expected \'=\' after identifier at {identifier_token.position}')
@@ -123,15 +132,7 @@ class Parser:
 
         expression = self.expression()
         if not expression: raise ParseException(f'Expected expression at {self.cur.position}')
-        return VariableAssignmentNode(identifier_token.value).set_position(identifier_token.position)
-
-    def print_statement(self) -> PrintNode:
-        token = self.cur
-        self.get_next()
-
-        expression = self.expression()
-        if not expression: raise ParseException(f'Expected expression at {token.position}')
-        return PrintNode(expression).set_position(token.position)
+        return VariableAssignmentNode(identifier_token.value, expression).set_position(identifier_token.position)
     
     def expression(self):
         return self.logical()
