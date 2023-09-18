@@ -29,10 +29,10 @@ def run(file_name, code):
     parser = Parser(tokens)
     ast = []
 
-    try:
-        ast = parser.generate_ast()
-    except Exception as e:
-        print(e)
+    # try:
+    ast = parser.generate_ast()
+    # except Exception as e:
+    #     print(e)
 
     if not ast: return
     for node in ast:

@@ -55,6 +55,22 @@ class StringNode(AstNode):
 
     def __repr__(self) -> str:
         return f'(StringNode: {self.value})'
+
+class PrintNode(AstNode):
+    def __init__(self, expression) -> None:
+        super().__init__()
+        self.expression = expression
+
+    def __repr__(self) -> str:
+        return f'(PrintNode: {self.expression})'
+    
+class CodeBlockNode(AstNode):
+    def __init__(self, statements) -> None:
+        super().__init__()
+        self.statements = statements
+
+    def __repr__(self) -> str:
+        return f'(CodeBlockNode: {self.statements})'
     
 class VariableDeclarationNode(AstNode):
     def __init__(self, data_type: str, name: str, expression) -> None:
@@ -82,11 +98,44 @@ class VariableAccessNode(AstNode):
 
     def __repr__(self) -> str:
         return f'(VariableAccessNode: {self.name})'
-
-class PrintNode(AstNode):
-    def __init__(self, expression) -> None:
+    
+class IfNode(AstNode):
+    def __init__(self, condition, true_statement, else_statement) -> None:
         super().__init__()
-        self.expression = expression
+        self.condition = condition
+        self.true_statement = true_statement
+        self.else_statement = else_statement
 
     def __repr__(self) -> str:
-        return f'(PrintNode: {self.expression})'
+        return f'(IfNode: {self.condition} then {self.true_statement} {f"else {self.else_statement}" if self.else_statement else ""})'
+
+class WhileNode(AstNode):
+    def __init__(self, condition, statement) -> None:
+        super().__init__()
+        self.condition = condition
+        self.statement = statement
+
+    def __repr__(self) -> str:
+        return f'(WhileLoopNode: {self.condition} then {self.statement})'
+    
+class BreakNode(AstNode):
+    def __init__(self) -> None:
+        super().__init__()
+
+    def __repr__(self) -> str:
+        return f'(BreakNode)'
+    
+class ContinueNode(AstNode):
+    def __init__(self) -> None:
+        super().__init__()
+
+    def __repr__(self) -> str:
+        return f'(ContinueNode)'
+
+class ListNode(AstNode):
+    def __init__(self, element_nodes) -> None:
+        super().__init__()
+        self.element_nodes = element_nodes
+
+    def __repr__(self) -> str:
+        return f'(ListNode {self.element_nodes})'

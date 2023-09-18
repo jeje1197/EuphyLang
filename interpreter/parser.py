@@ -65,7 +65,10 @@ class Parser:
         return self.cur.type == TOKEN_SEPARATOR and self.cur.value in separators
 
     def generate_ast(self):
-        return self.statements()
+        statements = self.statements()
+        if not self.match(TOKEN_EOF):
+            raise ParseException(f'Did not reach end of file at {self.cur.position}')
+        return statements
     
     def statements(self):
         statement_list = []
@@ -79,16 +82,28 @@ class Parser:
     def statement(self):
         if self.matchKeyword('print'):
             return self.print_statement()
+        elif self.matchSeparator('{'):
+            return self.code_block()
+        elif self.matchKeyword('if'):
+            return self.if_statement()
+        elif self.matchKeyword('while'):
+            return self.while_loop()
+        elif self.matchKeyword('break'):
+            return self.break_statement()
+        elif self.matchKeyword('continue'):
+            return self.continue_statement()
+
         elif self.match(TOKEN_IDENTIFIER) and self.match_lookahead(1, TOKEN_OPERATOR, '='):
             return self.variable_assignment()
         
         revert_point = self.index
         data_type = self.parse_type()
         if data_type and self.match(TOKEN_IDENTIFIER):
+            if self.match_lookahead(TOKEN_SEPARATOR, '('):
+                return self.function_declaration()
             return self.variable_declaration(data_type)
         else:
             self.reverse(revert_point)
-
         return None
     
     def print_statement(self) -> PrintNode:
@@ -99,10 +114,21 @@ class Parser:
         if not expression: raise ParseException(f'Expected expression at {token.position}')
         return PrintNode(expression).set_position(token.position)
     
+    def code_block(self):
+        token = self.cur
+        self.get_next()
+
+        statements = self.statements()
+        if not self.matchSeparator('}'):
+            raise ParseException(f'Expected \'{"}"}\' at {token.position}')
+        self.get_next()
+        return CodeBlockNode(statements).set_position(token.position)
+    
     def parse_type(self):
         data_type = ''
 
-        if not (self.matchKeywords(['dynamic', 'number', 'string']) or self.match(TOKEN_IDENTIFIER)):
+        if not (self.matchKeywords(['boolean', 'number', 'string', 'dynamic',
+            'list', 'table']) or self.match(TOKEN_IDENTIFIER)):
             return ''
         data_type += self.cur.value
         self.get_next()
@@ -133,6 +159,68 @@ class Parser:
         expression = self.expression()
         if not expression: raise ParseException(f'Expected expression at {self.cur.position}')
         return VariableAssignmentNode(identifier_token.value, expression).set_position(identifier_token.position)
+    
+    def if_statement(self):
+        token = self.cur
+        self.get_next()
+
+        if not self.matchSeparator('('):
+            raise ParseException(f'Expected \'(\' at {self.cur.position}')
+        self.get_next()
+
+        expression = self.expression()
+        if not expression: raise ParseException(f'Expected condition expression at {self.cur.position}')
+
+        if not self.matchSeparator(')'):
+            raise ParseException(f'Expected \')\' at {self.cur.position}')
+        self.get_next()
+
+        true_statement = self.statement()
+        if not true_statement: raise ParseException(f'Expected statement after if condition {self.cur.position}')
+
+        else_statement = None
+        if self.matchKeyword('else'):
+            self.get_next()
+
+            else_statement = self.statement()
+            if not else_statement: raise ParseException(f'Expected statement after else {self.cur.position}')
+
+        return IfNode(expression, true_statement, else_statement).set_position(token.position)
+
+    def while_loop(self):
+        token = self.cur
+        self.get_next()
+
+        if not self.matchSeparator('('):
+            raise ParseException(f'Expected \'(\' at {self.cur.position}')
+        self.get_next()
+
+        expression = self.expression()
+        if not expression: raise ParseException(f'Expected condition expression at {self.cur.position}')
+
+        if not self.matchSeparator(')'):
+            raise ParseException(f'Expected \')\' at {self.cur.position}')
+        self.get_next()
+
+        statement = self.statement()
+        if not statement: raise ParseException(f'Expected statement after while condition {self.cur.position}')
+        return WhileNode(expression, statement).set_position(token.position)
+
+    def break_statement(self):
+        token = self.cur
+        self.get_next()
+        return BreakNode().set_position(token.position)
+    
+    def continue_statement(self):
+        token = self.cur
+        self.get_next()
+        return ContinueNode().set_position(token.position)
+    
+    def function_declaration(self, return_type):
+        if not self.match(TOKEN_IDENTIFIER):
+            raise ParseException(f'Expected identifier after type at {self.cur.position}')
+        identifier_token = self.cur
+        self.get_next()
     
     def expression(self):
         return self.logical()
@@ -170,6 +258,8 @@ class Parser:
             return VariableAccessNode(token.value).set_position(token.position)
         elif self.matchSeparator('('):
             self.parenthesized_expression()
+        elif self.matchSeparator('[]'):
+            self.list_expression()
         return None
     
     def unary_op(self):
@@ -203,4 +293,48 @@ class Parser:
             raise ParseException(f'Expected \')\' at {self.cur.position}')
         self.get_next()
         return expression
+    
+    def list_expression(self):
+        token = self.cur
+        self.get_next()
+
+        element_nodes = []
+        expression = self.expression()
+        if expression:
+            element_nodes.append(element_nodes)
+
+            while self.matchSeparator(',') and not self.matchSeparator(']'):
+                self.get_next()
+
+                expression = self.expression()
+                if not expression:
+                    raise ParseException(f'Expected expression at {token.position}')
+                element_nodes.append(expression)
+        
+        if not self.matchSeparator(']'):
+            raise ParseException(f'Expected \']\' at {token.position}')
+        self.get_next()
+        return ListNode(element_nodes).set_position(token.position)
+    
+    # def table_expression(self):
+    #     token = self.cur
+    #     self.get_next()
+
+    #     element_nodes = []
+    #     expression = self.expression()
+    #     if expression:
+    #         element_nodes.append(element_nodes)
+
+    #         while self.matchSeparator(',') and not self.matchSeparator(']'):
+    #             self.get_next()
+
+    #             expression = self.expression()
+    #             if not expression:
+    #                 raise ParseException(f'Expected expression at {token.position}')
+    #             element_nodes.append(expression)
+        
+    #     if not self.matchSeparator(']'):
+    #         raise ParseException(f'Expected \']\' at {token.position}')
+    #     self.get_next()
+    #     return ListNode(element_nodes).set_position(token.position)
         

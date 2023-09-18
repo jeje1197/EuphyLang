@@ -19,7 +19,10 @@ DEFAULT_VALUES = {
 
 class Runtime:
     def __init__(self) -> None:
-        pass
+        self.LOGS = ''
+
+        self.should_break = False
+        self.should_continue = False
 
     def execute(self, ast):
         global_symbol_table = SymbolTable()
@@ -34,27 +37,35 @@ class Runtime:
     def visit_Error(self, node, symbol_table):
         raise RuntimeError(f"Visit method for {type(node).__name__} has not been implemented yet.")
     
-    def visit_UnaryOpNode(self, node, symbol_table):
+    def visit_UnaryOpNode(self, node: UnaryOpNode, symbol_table):
         pass
 
-    def visit_BinaryOpNode(self, node, symbol_table):
+    def visit_BinaryOpNode(self, node: BinaryOpNode, symbol_table):
         pass
 
-    def visit_NoneNode(self, node, symbol_table):
+    def visit_NoneNode(self, node: NoneNode, symbol_table):
         return NoneValue()
     
-    def visit_BooleanNode(self, node, symbol_table):
+    def visit_BooleanNode(self, node: BooleanNode, symbol_table):
         return BooleanValue(node.value)
         
-    def visit_NumberNode(self, node, symbol_table):
+    def visit_NumberNode(self, node: NumberNode, symbol_table):
         return NumberValue(node.value)
     
-    def visit_StringNode(self, node, symbol_table):
+    def visit_StringNode(self, node: StringNode, symbol_table):
         return StringValue(node.value)
     
-    def visit_PrintNode(self, node, symbol_table):
+    def visit_PrintNode(self, node: PrintNode, symbol_table):
         value = self.visit(node.expression, symbol_table)
         print(value)
+        return None
+    
+    def visit_CodeBlockNode(self, node: CodeBlockNode, symbol_table):
+        if not node.statements: return
+
+        new_symbol_table = SymbolTable(symbol_table)
+        for statement in node.statements:
+            self.visit(statement, new_symbol_table)
         return None
     
     def visit_VariableDeclarationNode(self, node: VariableDeclarationNode, symbol_table: SymbolTable):
@@ -71,6 +82,7 @@ class Runtime:
     
         container = Container(declared_type, value)
         symbol_table.insert(node.name, container)
+        return None
     
     def visit_VariableAssignmentNode(self, node: VariableAssignmentNode, symbol_table: SymbolTable):
         table = symbol_table.find(node.name)
@@ -84,6 +96,7 @@ class Runtime:
         if declared_type != 'dynamic' and declared_type != new_value.type:
             raise RuntimeException(f'\'{node.name}\' expects type {declared_type}, but received type {new_value.type} at {node.position}')
         container.update_value(new_value)
+        return None
 
     def visit_VariableAccessNode(self, node: VariableAccessNode, symbol_table: SymbolTable):
         container: Container = symbol_table.get(node.name)
@@ -91,5 +104,35 @@ class Runtime:
             raise RuntimeException(f'\'{node.name}\' cannot be resolved at {node.position}')
         return container.get_value()
     
+    def visit_IfNode(self, node: IfNode, symbol_table: SymbolTable):
+        condition_value = self.visit(node.condition, symbol_table)
+        if condition_value.is_truthy():
+            self.visit(node.true_statement, symbol_table)
+        elif node.else_statement:
+            self.visit(node.else_statement, symbol_table)
+        return None
     
+    def visit_WhileNode(self, node: WhileNode, symbol_table: SymbolTable):
+        while self.visit(node.condition, symbol_table).is_truthy():
+            self.visit(node.statement, symbol_table)
+            if self.should_break: break
+            if self.should_continue: continue
+        return None
+    
+    def visit_BreakNode(self, node: BreakNode, symbol_table: SymbolTable):
+        self.should_break = True
+
+    def visit_ContinueNode(self, node: ContinueNode, symbol_table: SymbolTable):
+        self.should_continue = True
+
+    # def visit_ListNode(self, node: ListNode, symbol_table: SymbolTable):
+    #     list_object = ListValue()
+    #     list
+
+    # def visit_
+    
+    
+
+        
+
 

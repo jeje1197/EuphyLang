@@ -4,6 +4,7 @@ TOKEN_KEYWORD = 'keyword'
 TOKEN_IDENTIFIER = 'identifier'
 TOKEN_OPERATOR = 'operator'
 TOKEN_SEPARATOR = 'separator'
+TOKEN_EOF = 'eof'
 
 class Token:
     def __init__(self, type, value=None, position=None):

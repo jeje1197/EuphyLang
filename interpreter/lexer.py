@@ -11,10 +11,11 @@ BEGIN_SYMBOL_CHARACTERS = string.ascii_letters + '_'
 SYMBOL_CHARACTERS = string.ascii_letters + '_' + string.digits
 
 KEYWORDS = [
-    'boolean', 'number', 'string', 'list', 'dynamic',
+    'boolean', 'number', 'string', 'dynamic', 'list', 'table',
 
+    'if', 'else', 'for', 'while', 'break', 'continue',
 
-    'const', 'true', 'false', 'print'
+    'true', 'false', 'print'
 ]
 TWO_CHAR_OPERATORS = ['<=', '>=', '==', '!=', '&&', '||']
 SINGLE_CHAR_OPERATORS = ['+', '-', '*', '/', '%', '<', '>', '=', '.']
@@ -84,6 +85,7 @@ class Lexer:
                 self.scan_separator()
             else:
                 raise ParseException(f'Did not reach end of input at {self.position}')
+        self.create_token(TOKEN_EOF)
         return self.tokens
                 
     def skip_comment(self) -> None:

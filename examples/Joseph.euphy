@@ -3,6 +3,15 @@ dynamic name = input()
 number a = 10
 string b = 10
 
-list<number> l = [3.3, 5.2]
+list l = [3.3, 5.2]
 
 boolean b = 5 or 6
+
+if (list) {
+
+}
+
+table t = {
+    'My Game': 8,
+    
+}
