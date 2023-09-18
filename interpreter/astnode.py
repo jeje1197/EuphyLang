@@ -25,6 +25,13 @@ class BinaryOpNode(AstNode):
     def __repr__(self) -> str:
         return f'(BinaryOpNode: {self.left_node} {self.operator} {self.right_node})'
     
+class NoneNode(AstNode):
+    def __init__(self) -> None:
+        super().__init__()
+
+    def __repr__(self) -> str:
+        return f'(NoneNode)'
+    
 class BooleanNode(AstNode):
     def __init__(self, value: str) -> None:
         super().__init__()
@@ -36,7 +43,7 @@ class BooleanNode(AstNode):
 class NumberNode(AstNode):
     def __init__(self, value: str) -> None:
         super().__init__()
-        self.value = value
+        self.value = float(value)
 
     def __repr__(self) -> str:
         return f'(NumberNode: {self.value})'

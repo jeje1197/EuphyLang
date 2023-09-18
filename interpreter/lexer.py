@@ -83,7 +83,7 @@ class Lexer:
             elif cur in SEPARATORS:
                 self.scan_separator()
             else:
-                raise ParseException(f'Did not reach end of input {self.position}')
+                raise ParseException(f'Did not reach end of input at {self.position}')
         return self.tokens
                 
     def skip_comment(self) -> None:
@@ -113,6 +113,10 @@ class Lexer:
             else:
                 string_literal += self.cur
                 self.get_next()
+        
+        if self.cur != '"':
+            raise ParseException(f'Unterminated string literal at {self.position}')
+        self.get_next()
         self.create_token(TOKEN_STRING, string_literal)
 
     def scan_keyword_or_identifier(self) -> None:

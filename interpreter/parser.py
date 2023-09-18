@@ -20,10 +20,25 @@ class Parser:
         else:
             self.cur = None
 
+    def lookahead(self, steps_ahead=1):
+        if self.has_next(steps_ahead):
+            return self.tokens[self.index + steps_ahead]
+        return None
+
+    def reverse(self, target_index):
+        self.index = target_index - 1
+        self.get_next()
+
     def match(self, type, value=None):
         if not self.cur: return False
         if not value: return self.cur.type == type
         return self.cur.type == type and self.cur.value == value
+    
+    def match_lookahead(self, steps_ahead, type=None, value=None):
+        token = self.lookahead(steps_ahead)
+        if not token: return False
+        if not value: return token.type == type
+        return token.type == type and token.value == value
 
     def matchKeyword(self, keyword):
         if not self.cur: return False
@@ -64,6 +79,16 @@ class Parser:
     def statement(self):
         if self.matchKeyword('print'):
             return self.print_statement()
+        elif self.match(TOKEN_IDENTIFIER) and self.match_lookahead(TOKEN_OPERATOR, '='):
+            return self.variable_assignment()
+        
+        revert_point = self.index
+        data_type = self.parse_type()
+        if data_type and self.match(TOKEN_IDENTIFIER) and self.match_lookahead(1, TOKEN_OPERATOR, '='):
+            return self.variable_declaration(data_type)
+        else:
+            self.reverse(revert_point)
+
         return None
     
     def parse_type(self):
@@ -72,11 +97,10 @@ class Parser:
         if not (self.matchKeywords(['dynamic', 'number', 'string']) or self.match(TOKEN_IDENTIFIER)):
             return ''
         data_type += self.cur.value
+        self.get_next()
         return data_type
     
     def variable_declaration(self, data_type):
-        token = self.cur
-
         if not self.match(TOKEN_IDENTIFIER):
             raise ParseException(f'Expected identifier after type at {token.position}')
         identifier_token = self.cur
@@ -88,7 +112,7 @@ class Parser:
 
             expression = self.expression()
             if not expression: raise ParseException(f'Expected expression at {self.cur.position}')
-        return VariableDeclarationNode(data_type, identifier_token.value, expression).set_position(token.position)
+        return VariableDeclarationNode(data_type, identifier_token.value, expression).set_position(identifier_token.position)
 
     def variable_assignment(self):
         identifier_token = self.cur
@@ -128,7 +152,7 @@ class Parser:
         token = self.cur
         if self.matchOperators(['+', '-']):
             return self.unary_op()
-        if self.match(TOKEN_NUMBER):
+        elif self.match(TOKEN_NUMBER):
             self.get_next()
             return NumberNode(token.value).set_position(token.position)
         elif self.match(TOKEN_STRING):
@@ -137,7 +161,10 @@ class Parser:
         elif self.matchKeywords(['true', 'false']):
             self.get_next()
             return BooleanNode(token.value).set_position(token.position)
-        elif self.matchKeyword(TOKEN_IDENTIFIER):
+        elif self.matchKeyword('none'):
+            self.get_next()
+            return NoneNode().set_position(token.position)
+        elif self.match(TOKEN_IDENTIFIER):
             self.get_next()
             return VariableAccessNode(token.value).set_position(token.position)
         elif self.matchSeparator('('):

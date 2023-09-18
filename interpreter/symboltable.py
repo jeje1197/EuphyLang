@@ -1,6 +1,6 @@
 class SymbolTable:
     def __init__(self, parent=None) -> None:
-        self.symbols = []
+        self.symbols = {}
         self.parent = parent
 
     def find(self, key):
