@@ -104,7 +104,16 @@ class Parser:
             return self.variable_declaration(data_type)
         else:
             self.reverse(revert_point)
-        return None
+        
+        return self.expression_statement()
+    
+    def expression_statement(self):
+        token = self.cur
+        expression = self.expression()
+
+        if expression and not isinstance(expression, FunctionCallNode):
+            raise ParseException(f'Expected statement at {token.position}')
+        return expression
     
     def print_statement(self) -> PrintNode:
         token = self.cur
@@ -276,7 +285,39 @@ class Parser:
         return self.binary_op(self.factor, ['+', '-'])
     
     def factor(self):
-        return self.binary_op(self.atom, ['*', '/', '%'])
+        return self.binary_op(self.modifier, ['*', '/', '%'])
+    
+    def modifier(self):
+        atom_node = self.atom()
+
+        while atom_node and (self.matchSeparators(['(', '[']) or self.matchOperator('.')):
+            atom_node = self.function_call(atom_node)
+            # atom_node = self.index_access_or_assign()
+            # atom_node = self.property_access_or_assign()
+        return atom_node
+    
+    def function_call(self, atom_node):
+        if not self.matchSeparator('('):
+            return atom_node
+        self.get_next()
+
+        args = []
+        expression = self.expression()
+        if expression:
+            args.append(expression)
+
+            while self.matchSeparator(',') and not self.matchSeparator(')'):
+                self.get_next()
+
+                expression = self.expression()
+                if not expression:
+                    raise ParseException(f'Expected expression at {atom_node.position}')
+                args.append(expression)
+        
+        if not self.matchSeparator(')'):
+            raise ParseException(f'Expected \')\' at {self.cur.position}')
+        self.get_next()
+        return FunctionCallNode(atom_node, args).set_position(atom_node.position)
 
     def atom(self):
         token = self.cur

@@ -143,8 +143,36 @@ class Runtime:
         symbol_table.insert(node.name, container)
         return None
     
-    def visit_FunctionCallNode(self, node: FunctionDeclarationNode, symbol_table: SymbolTable):
-        pass
+    def visit_FunctionCallNode(self, node: FunctionCallNode, symbol_table: SymbolTable):
+        function = self.visit(node.node_to_call, symbol_table)
+        if not isinstance(function, FunctionValue):
+            raise RuntimeException(f'{function.type} is not callable {node.position}')
+        
+        # Check number of args
+        parameter_count = len(function.parameters)
+        arg_count = len(node.args)
+        if parameter_count != arg_count:
+            raise RuntimeException(f'Function {function.name} expected {parameter_count} args, but received {arg_count} at {node.position}')
+
+        # Check type of args
+        new_symbol_table = SymbolTable(symbol_table)
+        for i in range(len(node.args)):
+            parameter_type = function.parameters[i][0]
+            key = function.parameters[i][1]
+            value = self.visit(node.args[i], symbol_table)
+            if parameter_type != 'dynamic' and parameter_type != value.type:
+                raise RuntimeException(f'Function \'{function.name}\' arg {i} expects type {parameter_type}, but received type {value.type} at {node.position}')
+            container = Container(parameter_type, value)
+            new_symbol_table.insert(key, container)
+
+        # Execute statements
+        for statement in function.statements:
+            self.visit(statement, new_symbol_table)
+        return NoneValue()
+        
+        
+
+        
 
 
     # def visit_ListNode(self, node: ListNode, symbol_table: SymbolTable):
