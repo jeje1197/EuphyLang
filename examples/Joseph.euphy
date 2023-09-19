@@ -7,7 +7,7 @@ list l = [3.3, 5.2]
 
 boolean b = 5 or 6
 
-class EuphyLang : Joseph, MongoDBSocket {
+class EuphyLang {
     dynamic player1 = "This is a dynamically-typed variable"
     string player2 = "This is a statically-typed variable"
 
@@ -19,6 +19,9 @@ class EuphyLang : Joseph, MongoDBSocket {
 
         println("Your name is: " + name)
     }
-
-
 }
+
+dynamic e = EuphyLang()
+// create new instance
+// create new scope for the object,  initializers inside then c
+// run initializers inside of object

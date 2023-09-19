@@ -83,7 +83,7 @@ class Lexer:
                 self.scan_string() 
             elif cur in BEGIN_SYMBOL_CHARACTERS: 
                 self.scan_keyword_or_identifier()
-            elif cur in TWO_CHAR_OPERATORS:
+            elif next_two in TWO_CHAR_OPERATORS:
                 self.scan_two_char_operators()
             elif cur in SINGLE_CHAR_OPERATORS:
                 self.scan_single_char_operator()
@@ -107,7 +107,6 @@ class Lexer:
                 decimal_count += 1
             number_literal += self.cur
             self.get_next()
-        print (self.cur)
         self.create_token(TOKEN_NUMBER, number_literal)
 
     def scan_string(self) -> None:

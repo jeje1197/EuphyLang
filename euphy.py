@@ -4,7 +4,7 @@ from interpreter.runtime import Runtime
 
 def repl():
     while True:
-        user_input = input('Euphy>')
+        user_input = input('\nEuphy>')
 
         if user_input:
             run('Console', user_input)
@@ -23,8 +23,8 @@ def run(file_name, code):
         print(e)
 
     if not tokens: return
-    for token in tokens:
-        print(token)
+    # for token in tokens:
+    #     print(token)
 
     parser = Parser(tokens)
     ast = []
@@ -35,8 +35,8 @@ def run(file_name, code):
         print(e)
 
     if not ast: return
-    for node in ast:
-        print(node)
+    # for node in ast:
+    #     print(node)
 
     runtime = Runtime()
     try:

@@ -27,9 +27,14 @@ class Runtime:
         self.should_return = False
         self.return_value = NoneValue()
 
+    def insert_native_data(self, global_symbol_table: SymbolTable):
+        for package in native_data:
+            global_symbol_table.insert(package[0], package[1])
+
     def execute(self, ast):
         global_symbol_table = SymbolTable()
-        global_symbol_table.insert('println', print_function)
+        self.insert_native_data(global_symbol_table)
+        
         for node in ast:
             self.visit(node, global_symbol_table)
         
@@ -42,10 +47,55 @@ class Runtime:
         raise RuntimeError(f"Visit method for {type(node).__name__} has not been implemented yet.")
     
     def visit_UnaryOpNode(self, node: UnaryOpNode, symbol_table):
-        pass
+        operand = self.visit(node.expression, symbol_table)
+        operator = node.operator
+        position = node.position
+        match operator:
+            case '+':
+                return operand
+            case '-':
+                return operand.op_negate()
+            case '!':
+                return operand.op_not()
+            case '_':
+                raise RuntimeError(f"Unary operation '{operator}' has not been implemented yet.")
 
     def visit_BinaryOpNode(self, node: BinaryOpNode, symbol_table):
-        pass
+        left_value = self.visit(node.left_node, symbol_table)
+        right_value = self.visit(node.right_node, symbol_table)
+        operator = node.operator
+        position = node.position
+
+        match operator:
+            case '+':
+                return left_value.op_add(right_value, position)
+            case '-':
+                return left_value.op_sub(right_value, position)
+            case '*':
+                return left_value.op_mul(right_value, position)
+            case '/':
+                return left_value.op_div(right_value, position)
+            case '%':
+                return left_value.op_rem(right_value, position)
+            case '<':
+                return left_value.op_lt(right_value, position)
+            case '<=':
+                return left_value.op_lte(right_value, position)
+            case '>':
+                return left_value.op_gt(right_value, position)
+            case '>=':
+                return left_value.op_gte(right_value, position)
+            case '==':
+                return left_value.op_ee(right_value, position)
+            case '!=':
+                return left_value.op_ne(right_value, position)
+            case '&&':
+                return left_value.op_and(right_value, position)
+            case '||':
+                return left_value.op_or(right_value, position)
+            case '':
+                raise RuntimeError(f"Binary operation '{operator}' has not been implemented yet.")
+
 
     def visit_NoneNode(self, node: NoneNode, symbol_table):
         return NoneValue()
@@ -156,7 +206,7 @@ class Runtime:
     def visit_FunctionCallNode(self, node: FunctionCallNode, symbol_table: SymbolTable):
         function = self.visit(node.node_to_call, symbol_table)
         if not (isinstance(function, FunctionValue) or isinstance(function, ClassDefinition)):
-            raise RuntimeException(f'{function.type} is not callable {node.position}')
+            raise RuntimeException(f'{function.type} is not callable at {node.position}')
         
         # Check number of args
         parameter_count = len(function.parameters)

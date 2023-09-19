@@ -1,13 +1,67 @@
+from .exception import RuntimeException
+
 class Value: 
     def __init__(self, type) -> None:
         self.type = type
+
+    def get_value(self):
+        return self.value
     
     def is_truthy(self):
         return True
+    
+    def invalid_operation(self, operator, other, position):
+        raise RuntimeException(f'Invalid operation \'{operator}\' on types {self.type}, {other.type} at {position}')
+    
+    def op_add(self, other, position):
+        self.invalid_operation('+', other, position)
+
+    def op_sub(self, other, position):
+        self.invalid_operation('-', other, position)
+
+    def op_mul(self, other, position):
+        self.invalid_operation('*', other, position)
+
+    def op_div(self, other, position):
+        self.invalid_operation('/', other, position)
+
+    def op_rem(self, other, position):
+        self.invalid_operation('%', other, position)
+
+    def op_lt(self, other, position):
+        self.invalid_operation('<', other, position)
+
+    def op_gt(self, other, position):
+        self.invalid_operation('>', other, position)
+
+    def op_lte(self, other, position):
+        self.invalid_operation('<=', other, position)
+
+    def op_gte(self, other, position):
+        self.invalid_operation('>=', other, position)
+
+    def op_ee(self, other, position):
+        if self.type != other.type:
+            return BooleanValue(False)
+        return BooleanValue(self.get_value() == other.get_value())
+
+    def op_ne(self, other, position):
+        return BooleanValue(self.get_value() != other.get_value())
+
+    def op_and(self, other, position):
+        return BooleanValue(self.is_truthy() and other.is_truthy())
+
+    def op_or(self, other, position):
+        return BooleanValue(self.is_truthy() or other.is_truthy())
+
 
 class NoneValue(Value):
     def __init__(self) -> None:
         super().__init__('none')
+        self.value = None
+    
+    def get_value(self):
+        return self.value
 
     def is_truthy(self):
         return False
@@ -20,6 +74,9 @@ class BooleanValue(Value):
         super().__init__('boolean')
         self.value = value
 
+    def get_value(self):
+        return self.value
+
     def is_truthy(self):
         return self.value
     
@@ -31,8 +88,56 @@ class NumberValue(Value):
         super().__init__('number')
         self.value = value
 
+    def get_value(self):
+        return self.value
+
     def is_truthy(self):
         return bool(self.value)
+    
+    def op_add(self, other, position):
+        if isinstance(other, NumberValue):
+            return NumberValue(self.value + other.value)
+        self.invalid_operation('+', other, position)
+
+    def op_sub(self, other, position):
+        if isinstance(other, NumberValue):
+            return NumberValue(self.value - other.value)
+        self.invalid_operation('-', other, position)
+
+    def op_mul(self, other, position):
+        if isinstance(other, NumberValue):
+            return NumberValue(self.value * other.value)
+        self.invalid_operation('*', other, position)
+
+    def op_div(self, other, position):
+        if isinstance(other, NumberValue):
+            return NumberValue(self.value / other.value)
+        self.invalid_operation('/', other, position)
+
+    def op_rem(self, other, position):
+        if isinstance(other, NumberValue):
+            return NumberValue(self.value % other.value)
+        self.invalid_operation('%', other, position)
+
+    def op_lt(self, other, position):
+        if isinstance(other, NumberValue):
+            return NumberValue(self.value < other.value)
+        self.invalid_operation('<', other, position)
+
+    def op_gt(self, other, position):
+        if isinstance(other, NumberValue):
+            return NumberValue(self.value > other.value)
+        self.invalid_operation('>', other, position)
+
+    def op_lte(self, other, position):
+        if isinstance(other, NumberValue):
+            return NumberValue(self.value <= other.value)
+        self.invalid_operation('<=', other, position)
+
+    def op_gte(self, other, position):
+        if isinstance(other, NumberValue):
+            return NumberValue(self.value >= other.value)
+        self.invalid_operation('>=', other, position)
     
     def __repr__(self) -> str:
         return f'{self.value}'
@@ -42,8 +147,36 @@ class StringValue(Value):
         super().__init__('string')
         self.value = value
 
+    def get_value(self):
+        return self.value
+
     def is_truthy(self):
         return bool(self.value)
+    
+    def op_add(self, other, position):
+        if isinstance(other, StringValue):
+            return StringValue(self.value + other.value)
+        self.invalid_operation('+', other, position)
+
+    def op_lt(self, other, position):
+        if isinstance(other, StringValue):
+            return StringValue(self.value < other.value)
+        self.invalid_operation('<', other, position)
+
+    def op_gt(self, other, position):
+        if isinstance(other, StringValue):
+            return StringValue(self.value > other.value)
+        self.invalid_operation('>', other, position)
+
+    def op_lte(self, other, position):
+        if isinstance(other, StringValue):
+            return StringValue(self.value <= other.value)
+        self.invalid_operation('<=', other, position)
+
+    def op_gte(self, other, position):
+        if isinstance(other, StringValue):
+            return StringValue(self.value >= other.value)
+        self.invalid_operation('>=', other, position)
 
     def __repr__(self) -> str:
         return self.value
@@ -57,6 +190,9 @@ class FunctionValue(Value):
         self.statements = statements
         self.is_native = is_native
         self.native_function = native_function
+
+    def get_value(self):
+        return self
 
     def is_truthy(self):
         return True
