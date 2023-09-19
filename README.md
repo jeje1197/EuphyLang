@@ -1,15 +1,33 @@
 # EuphyLang
 
-Euphy is an object programming language created by Joseph Evans.
+Euphy is an object-oriented programming language created by Joseph Evans.
 It serves as a prototype to a type system that contains both static and dynamic types.
 
-Discord: 
+
+```
+print("Hello Euphy!")
+
+class Euphy {
+    dynamic value;
+
+    none setNumber(number value) {
+        this.value = value
+    }
+
+    none setString(string value) {
+        this.value = value
+    }
+}
+
+```
+\
+Discord: https://discord.gg/Yck2Y9zNw
 
 ## Getting Started
 
 Requirements:
     
-1) Have Python 3 installed on your computer. You can download it from https://www.python.org/downloads.
+1) Python 3. [Download it here](https://www.python.org/downloads)
 
 Guide:
 1) Clone the repository locally to your computer.
@@ -25,15 +43,14 @@ Guide:
    python euphy.py
    ```
 
-4) This is the REPL (Read-Eval Print Loop). You can run code directly from it or read from a file.
+4) The interpreter will open to the REPL (Read-Eval Print Loop). Here you can run code directly or read from a file.\
 
-   Directly from REPL
+   Running code in the REPL
    ```
    print(55)
    ```
 
-   Reading from a file
+   Running code from a file
    ```
    -r hello_world.euphy
    ```
-6) 
