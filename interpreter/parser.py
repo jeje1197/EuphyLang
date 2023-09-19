@@ -94,6 +94,8 @@ class Parser:
             return self.break_statement()
         elif self.matchKeyword('continue'):
             return self.continue_statement()
+        elif self.matchKeyword('return'):
+            return self.return_statement()
         elif self.matchKeyword('class'):
             return self.class_declaration()
 
@@ -140,7 +142,7 @@ class Parser:
         data_type = ''
 
         if not (self.matchKeywords(['boolean', 'number', 'string', 'dynamic',
-            'list', 'table']) or self.match(TOKEN_IDENTIFIER)):
+            'function', 'list', 'table']) or self.match(TOKEN_IDENTIFIER)):
             return ''
         data_type += self.cur.value
         self.get_next()
@@ -275,6 +277,13 @@ class Parser:
         self.get_next()
         return FunctionDeclarationNode(name_token.value, parameters, return_type, statements).set_position(name_token.position)
     
+    def return_statement(self):
+        token = self.cur
+        self.get_next()
+
+        expression = self.expression()
+        return ReturnNode(expression).set_position(token.position)
+    
     def class_declaration(self):
         token = self.cur
         self.get_next()
@@ -289,9 +298,16 @@ class Parser:
         if self.matchSeparator(':'):
             self.get_next()
 
-            if not self.matchSeparator('['):
-                raise ParseException(f'Expected inheritance list at {self.cur.position}')
-            inheritance_list = self.list_expression()
+            expression = self.expression()
+            if not expression:
+                raise ParseException(f'Expected expression at {token.position}')
+            inheritance_list.append(expression)
+            while self.matchSeparator(','):
+                self.get_next()
+                expression = self.expression()
+                if not expression:
+                    raise ParseException(f'Expected expression at {token.position}')
+                inheritance_list.append(expression)
 
         if not self.matchSeparator('{'):
             raise ParseException(f'Expected \'{"{"}\' at {self.cur.position}')
@@ -303,7 +319,6 @@ class Parser:
             raise ParseException(f'Expected \'{"}"}\' at {self.cur.position}')
         self.get_next()
         return ClassDeclarationNode(name_token.value, inheritance_list, statements).set_position(token.position)
-
     
     def expression(self):
         return self.logical()
@@ -372,9 +387,9 @@ class Parser:
             self.get_next()
             return VariableAccessNode(token.value).set_position(token.position)
         elif self.matchSeparator('('):
-            self.parenthesized_expression()
-        elif self.matchSeparator('[]'):
-            self.list_expression()
+            return self.parenthesized_expression()
+        elif self.matchSeparator('['):
+            return self.list_expression()
         return None
     
     def unary_op(self):
@@ -404,6 +419,7 @@ class Parser:
         expression = self.expression()
         if not expression:
             raise ParseException(f'Expected expression at {token.position}')
+
         if not self.matchSeparator(')'):
             raise ParseException(f'Expected \')\' at {self.cur.position}')
         self.get_next()

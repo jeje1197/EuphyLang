@@ -152,6 +152,14 @@ class FunctionCallNode(AstNode):
     def __repr__(self) -> str:
         return f'(FunctionCallNode {self.node_to_call} {self.args})'
     
+class ReturnNode(AstNode):
+    def __init__(self, expression) -> None:
+        super().__init__()
+        self.expression = expression
+
+    def __repr__(self) -> str:
+        return f'(ReturnNode {self.expression})'
+    
 class ClassDeclarationNode(AstNode):
     def __init__(self, name, inheritance_list, statements) -> None:
         super().__init__()

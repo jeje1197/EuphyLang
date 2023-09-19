@@ -71,6 +71,17 @@ class FunctionValue(Value):
         signature += f' -> {self.return_type}'
         return f'<function {self.name} {signature}>'
     
+class ClassDefinition(Value):
+    def __init__(self, name, parents) -> None:
+        super().__init__('')
+        self.name = name
+        self.parents = parents
+        self.class_attributes = {}
+        self.object_fields = {}
+    
+    def __repr__(self) -> str:
+        return f'<class \'{self.name}\'>'
+
 class ListValue(Value):
     def __init__(self) -> None:
         super().__init__()

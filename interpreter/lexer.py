@@ -11,9 +11,13 @@ BEGIN_SYMBOL_CHARACTERS = string.ascii_letters + '_'
 SYMBOL_CHARACTERS = string.ascii_letters + '_' + string.digits
 
 KEYWORDS = [
-    'boolean', 'number', 'string', 'dynamic', 'list', 'table',
+    'boolean', 'number', 'string', 'dynamic', 'function', 'list', 'table',
 
+    'print', 
+    
     'if', 'else', 'for', 'while', 'break', 'continue',
+
+    'return',
 
     'true', 'false', 'print',
 

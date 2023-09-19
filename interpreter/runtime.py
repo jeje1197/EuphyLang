@@ -24,6 +24,8 @@ class Runtime:
 
         self.should_break = False
         self.should_continue = False
+        self.should_return = False
+        self.return_value = NoneValue()
 
     def execute(self, ast):
         global_symbol_table = SymbolTable()
@@ -68,6 +70,7 @@ class Runtime:
         new_symbol_table = SymbolTable(symbol_table)
         for statement in node.statements:
             self.visit(statement, new_symbol_table)
+            if self.should_break or self.should_continue or self.should_return: break
         return None
     
     def visit_VariableDeclarationNode(self, node: VariableDeclarationNode, symbol_table: SymbolTable):
@@ -117,8 +120,13 @@ class Runtime:
     def visit_WhileNode(self, node: WhileNode, symbol_table: SymbolTable):
         while self.visit(node.condition, symbol_table).is_truthy():
             self.visit(node.statement, symbol_table)
-            if self.should_break: break
-            if self.should_continue: continue
+            if self.should_break: 
+                self.should_break = False
+                break
+            elif self.should_continue: 
+                self.should_continue = False
+                continue
+            elif self.should_return: break
         return None
     
     def visit_BreakNode(self, node: BreakNode, symbol_table: SymbolTable):
@@ -173,4 +181,20 @@ class Runtime:
         # Execute statements
         for statement in function.statements:
             self.visit(statement, new_symbol_table)
+            if self.should_return:
+                return_value = self.return_value
+                self.return_value = NoneValue()
+                if function.return_type != 'dynamic' and function.return_type != return_value.type:
+                    raise RuntimeException(f'Function \'{function.name}\' should return type {function.return_type}, but received type {return_value.type} at {node.position}')
+                return return_value
+
         return NoneValue()
+    
+    def visit_ReturnNode(self, node: ReturnNode, symbol_table: SymbolTable):
+        self.should_return = True
+
+        if node.expression:
+            self.return_value = self.visit(node.expression, symbol_table)
+        else:
+            self.return_value = NoneValue()
+        return None
