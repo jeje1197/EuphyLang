@@ -12,11 +12,28 @@ Requirements:
 1) Have Python 3 installed on your computer. You can download it from https://www.python.org/downloads.
 
 Guide:
-1) Clone the repository locally to your computer
-    - git clone https://github.com/jeje1197/EuphyLang.git
+1) Clone the repository locally to your computer.
+
+   ```
+   git clone https://github.com/jeje1197/EuphyLang.git
+   ```
     
 2) Navigate to the root directory of the project
-3) Run euphy.py
-   python euphy.py
+3) Run the Euphy interpreter
 
-4)
+   ```
+   python euphy.py
+   ```
+
+4) This is the REPL (Read-Eval Print Loop). You can run code directly from it or read from a file.
+
+   Directly from REPL
+   ```
+   print(55)
+   ```
+
+   Reading from a file
+   ```
+   -r hello_world.euphy
+   ```
+6) 
