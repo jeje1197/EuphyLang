@@ -5,7 +5,7 @@ class Value:
         self.type = type
 
     def get_value(self):
-        return self.value
+        return self
     
     def is_truthy(self):
         return True
@@ -190,9 +190,6 @@ class FunctionValue(Value):
         self.statements = statements
         self.is_native = is_native
         self.native_function = native_function
-
-    def get_value(self):
-        return self
 
     def is_truthy(self):
         return True
