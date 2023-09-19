@@ -155,7 +155,7 @@ class Runtime:
     
     def visit_FunctionCallNode(self, node: FunctionCallNode, symbol_table: SymbolTable):
         function = self.visit(node.node_to_call, symbol_table)
-        if not isinstance(function, FunctionValue):
+        if not (isinstance(function, FunctionValue) or isinstance(function, ClassDefinition)):
             raise RuntimeException(f'{function.type} is not callable {node.position}')
         
         # Check number of args
@@ -198,3 +198,31 @@ class Runtime:
         else:
             self.return_value = NoneValue()
         return None
+    
+    def visit_ClassDeclarationNode(self, node: ClassDeclarationNode, symbol_table: SymbolTable):
+        if symbol_table.find(node.name):
+            raise RuntimeException(f'\'{node.name}\' is already declared in scope at {node.position}')
+        
+        class_definition = ClassDefinition(node.name, node.inheritance_list)
+        field_declarations = []
+        methods = SymbolTable()
+        
+        for declaration in node.statements:
+            if not (isinstance(declaration, VariableDeclarationNode) or isinstance(declaration, FunctionDeclarationNode)):
+                raise RuntimeException(f'Invalid declaration in class body at {declaration.position}')
+            if isinstance(declaration, VariableDeclarationNode):
+                field_declarations.append(declaration)
+            else:
+                declaration: FunctionDeclarationNode
+                self.visit(declaration, methods)
+        
+        class_definition.field_declarations = field_declarations
+        class_definition.methods = methods
+        container = Container(node.name, class_definition)
+        symbol_table.insert(node.name, container)
+
+    def createInstance(self):
+        pass
+
+
+        

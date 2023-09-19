@@ -9,8 +9,9 @@ class SymbolTable:
     def find(self, key):
         table = self
         while table:
-            if key in table.symbols: return table
-            table = self.parent
+            if key in table.symbols: 
+                return table
+            table = self.parent if self.parent else None
         return None
 
     def insert(self, key, value):

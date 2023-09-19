@@ -73,7 +73,7 @@ class FunctionValue(Value):
     
 class ClassDefinition(Value):
     def __init__(self, name, parents) -> None:
-        super().__init__('')
+        super().__init__(name)
         self.name = name
         self.parents = parents
         self.class_attributes = {}
