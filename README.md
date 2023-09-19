@@ -1,13 +1,19 @@
 # EuphyLang
 
 Euphy is an high-level, object-oriented programming language created by Joseph Evans.
-It serves as a prototype to a type system that contains both static and dynamic types.
+It serves as a prototype to a system that allows developers to use both static and dynamic
+types and define how they interact. An experimental feature of this is cast control - the ability to choose how
+implicit casting occurs.
 
 ```
-print("Hello Euphy!")
+#define string -> number = strToNum
+
+number strToNum(string str) {
+    return number(str)
+}
 
 class Euphy {
-    dynamic value;
+    dynamic value
 
     none setNumber(number value) {
         this.value = value
