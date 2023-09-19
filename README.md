@@ -45,7 +45,7 @@ Guide:
    python euphy.py
    ```
 
-4) The interpreter will open to the REPL (Read-Eval Print Loop). Here you can run code directly or read from a file.\
+4) The interpreter will open to the REPL (Read-Eval Print Loop). Here you can run code directly or read from a file.
 
    Running code in the REPL
    ```
