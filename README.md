@@ -1,8 +1,7 @@
 # EuphyLang
 
-Euphy is an object-oriented programming language created by Joseph Evans.
+Euphy is an high-level, object-oriented programming language created by Joseph Evans.
 It serves as a prototype to a type system that contains both static and dynamic types.
-
 
 ```
 print("Hello Euphy!")
@@ -20,6 +19,9 @@ class Euphy {
 }
 
 ```
+
+Version: 1.0
+It is currently in development and open to contibution.
 \
 Discord: https://discord.gg/Yck2Y9zNw
 
