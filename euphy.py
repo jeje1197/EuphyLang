@@ -14,7 +14,7 @@ def repl():
             info_message()
             continue
         elif user_input.startswith('-r'):
-            file_path = user_input[2:]
+            file_path = user_input[2:].strip()
             f, file_content = None, ''
             try:
                 f = open(file_path, "r")
@@ -37,24 +37,41 @@ def help_message():
     message = """
 This is the EuphyLang REPL (Read-Eval-Print-Loop).
 You can type code directly into the REPL or run code from a file
-using the -r flag.
+using the -r flag. To exit, use CTRL + C or type "exit()" into the console.
 
 Flags:
     -r [filepath]: Run module from file path
+       Examples:
+            Type "-r hello_world.euphy" to run the file hello_world.euphy
+            Type "-r examples/variables.euphy" to run variables.euphy in the examples folder
+
+Report Issue: https://github.com/jeje1197/EuphyLang/issues
 """
     message = '\n' + message.strip()
     print(message)
 
 def info_message():
     message = """
-Euphy is a high-level, object-oriented programming language that combines static and dynamic types. It serves as a prototype to a unique system that allow
-developers to focus
-
-EuphyLang is currently open to contribution.
+Euphy is an object-oriented programming language that combines 
+the world of static and dynamic types. It serves as a prototype to
+features such as:
+    - Cast Behavior Definition
+    - Mixing of static and dynamic types
 
 Creator: Joseph Evans
-GitHub: https://github.com/jeje1197/EuphyLang
-Discord: 
+Version: 1.0
+
+EuphyLang is in the development stage and open to contribution.
+Whether you want to help with the project or 
+just chat with the community, we'd love to have you.
+
+Two ways to join the discord: 
+    1) Run discord() from the REPL or,
+    2) Click on the following link: https://discord.gg/Yck2Y9zNw
+
+Two ways to visit the github:
+    1) Run github() from the REPL or,
+    2) Click on the following link: https://github.com/jeje1197/EuphyLang
 """
     message = '\n' + message.strip()
     print(message)

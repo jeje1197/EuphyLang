@@ -1,0 +1,19 @@
+// Classes will be implemented in an upcoming build
+
+class Car {
+    dynamic start() {
+        print("Starting the car.")
+    }
+}
+
+class Racecar {
+    dynamic start() {
+        print("Starting the racecar.")
+    }
+}
+
+Car car1 = Car()
+Car car2 = Racecar()
+
+car1.start()
+car2.start()

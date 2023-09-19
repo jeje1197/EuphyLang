@@ -1,5 +1,0 @@
-
-
-dynamic name = "Joseph"
-print "Your name is: " + name
-

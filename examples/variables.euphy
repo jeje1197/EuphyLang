@@ -1,0 +1,16 @@
+// In EuphyLang, you can create variables with static or dynamic-typing
+
+
+// If a variable is declared with a type, it will only accept values of that type
+string str = "A string"
+
+// Invalid code below (Uncomment to observe error)
+// str = 24
+
+
+// Use the dynamic keyword to create variables with types that can change throughout the program
+dynamic myVar = "A string"
+print(myVar)
+
+myVar = 24
+print(myVar)
