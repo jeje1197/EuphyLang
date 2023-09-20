@@ -1,29 +1,35 @@
 # EuphyLang
 
-Euphy is an high-level, object-oriented programming language created by Joseph Evans.
-It serves as a prototype to a system that allows developers to use both static and dynamic
-types and define how they interact. An experimental feature of this is cast control - the ability to choose how
-implicit casting occurs.
+Euphy is a general-purpose programming language created by Joseph Evans.
+It serves as a prototype for a system that allows developers to use both static and dynamic
+types and define how they interact.
+
+
+**If you want to try EuphyLang now, check out the [Getting Started](#getting-started) section.**
+
+**For updates, discussion or help, join the community [discord](https://discord.gg/Yck2Y9zNw).**
+
+
+An unique feature of Euphy is cast controlling - the ability to choose when and how an
+implicit casting occurs. Take a look at the following example:
 
 ```
-#define string -> number = strToNum
-
-number strToNum(string str) {
-    return number(str)
-}
-
-class Euphy {
-    dynamic value
-
-    none setNumber(number value) {
-        this.value = value
-    }
-
-    none setString(string value) {
-        this.value = value
+string converter(number n) {
+    if (n < 0) {
+        return "A negative value"
+    } else if (n == 0) {
+        return "Zero"
+    } else {
+        return "A positive value"
     }
 }
 
+#cast number -> string converter
+
+string value = 64
+print(value)
+
+#uncast number -> string
 ```
 
 Version: 1.0
@@ -55,7 +61,7 @@ Guide:
 
    Running code in the REPL
    ```
-   print(55)
+   print("Hello Euphy!")
    ```
 
    Running code from a file
