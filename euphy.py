@@ -39,7 +39,7 @@ def help_message():
     message = """
 This is the EuphyLang REPL (Read-Eval-Print-Loop).
 You can type code directly into the REPL or run code from a file
-using the -r flag. To exit, use CTRL + C or type "exit()" into the console.
+using the -r flag. To exit, use CTRL + C or type "exit()" in the console.
 
 Flags:
     -r [filepath]: Run module from file path
