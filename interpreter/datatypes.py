@@ -56,6 +56,9 @@ class Value:
     
     def op_not(self):
         return BooleanValue(not self.is_truthy())
+    
+    def op_negate(self, position):
+        raise RuntimeException(f'Type {self.type} cannot be negated at {position}')
 
 
 class NoneValue(Value):
@@ -141,6 +144,9 @@ class NumberValue(Value):
         if isinstance(other, NumberValue):
             return NumberValue(self.value >= other.value)
         self.invalid_operation('>=', other, position)
+
+    def op_negate(self, position):
+        return NumberValue(-self.value)
     
     def __repr__(self) -> str:
         return f'{self.value}'

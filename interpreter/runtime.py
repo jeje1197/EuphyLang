@@ -52,14 +52,14 @@ class Runtime:
         raise RuntimeError(f"Visit method for {type(node).__name__} has not been implemented yet.")
     
     def visit_UnaryOpNode(self, node: UnaryOpNode, symbol_table):
-        operand = self.visit(node.expression, symbol_table)
+        operand: Value = self.visit(node.expression, symbol_table)
         operator = node.operator
         position = node.position
         match operator:
             case '+':
                 return operand
             case '-':
-                return operand.op_negate()
+                return operand.op_negate(position)
             case '!':
                 return operand.op_not()
             case '_':

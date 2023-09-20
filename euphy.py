@@ -54,11 +54,11 @@ Report Issue: https://github.com/jeje1197/EuphyLang/issues
 
 def info_message():
     message = f"""
-Euphy is a programming language that combines 
+Euphy is a general-purpose programming language that combines 
 the world of static and dynamic types. It serves as a prototype to
 features such as:
+    - Mixing static and dynamic types
     - Cast Behavior Definition
-    - Mixing of static and dynamic types
 
 Creator: Joseph Evans
 Version: {VERSION_NUMBER}
