@@ -2,6 +2,8 @@ from interpreter.lexer import Lexer
 from interpreter.parser import Parser
 from interpreter.runtime import Runtime
 
+VERSION_NUMBER = '0.0.1'
+
 def repl():
     welcome()
     while True:
@@ -29,7 +31,7 @@ def repl():
             run('Console', user_input)
 
 def welcome():
-    message = '=== Welcome to EuphyLang v1.0 ===\n'
+    message = f'=== Welcome to EuphyLang v{VERSION_NUMBER} ===\n'
     message += 'Type "help" or "info" for more infomation.'
     print(message)
 
@@ -51,15 +53,15 @@ Report Issue: https://github.com/jeje1197/EuphyLang/issues
     print(message)
 
 def info_message():
-    message = """
-Euphy is an object-oriented programming language that combines 
+    message = f"""
+Euphy is a programming language that combines 
 the world of static and dynamic types. It serves as a prototype to
 features such as:
     - Cast Behavior Definition
     - Mixing of static and dynamic types
 
 Creator: Joseph Evans
-Version: 1.0
+Version: {VERSION_NUMBER}
 
 EuphyLang is in the development stage and open to contribution.
 Whether you want to help with the project or 
