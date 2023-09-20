@@ -1,0 +1,19 @@
+string converter(number n) {
+    if (n < 0) {
+        return "A negative value"
+    } else if (n == 0) {
+        return "Zero"
+    } else {
+        return "A positive value"
+    }
+}
+
+dynamic testCast(string str) {
+    print(str)
+}
+
+#cast number -> string converter
+
+testCast(63)
+
+#uncast number -> string

@@ -230,7 +230,9 @@ class Runtime:
             key = function.parameters[i][1]
             value = self.visit(node.args[i], symbol_table)
             if parameter_type != 'dynamic' and parameter_type != value.type:
-                raise RuntimeException(f'Function \'{function.name}\' arg {i} expects type {parameter_type}, but received type {value.type} at {node.position}')
+                if not self.process_cast(value, parameter_type, symbol_table, node.position):
+                    raise RuntimeException(f'Function \'{function.name}\' arg {i} expects type {parameter_type}, but received type {value.type} at {node.position}')
+                value = self.get_casted_value()
             container = Container(parameter_type, value)
             new_symbol_table.insert(key, container)
 
