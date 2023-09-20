@@ -127,22 +127,22 @@ class NumberValue(Value):
 
     def op_lt(self, other, position):
         if isinstance(other, NumberValue):
-            return NumberValue(self.value < other.value)
+            return BooleanValue(self.value < other.value)
         self.invalid_operation('<', other, position)
 
     def op_gt(self, other, position):
         if isinstance(other, NumberValue):
-            return NumberValue(self.value > other.value)
+            return BooleanValue(self.value > other.value)
         self.invalid_operation('>', other, position)
 
     def op_lte(self, other, position):
         if isinstance(other, NumberValue):
-            return NumberValue(self.value <= other.value)
+            return BooleanValue(self.value <= other.value)
         self.invalid_operation('<=', other, position)
 
     def op_gte(self, other, position):
         if isinstance(other, NumberValue):
-            return NumberValue(self.value >= other.value)
+            return BooleanValue(self.value >= other.value)
         self.invalid_operation('>=', other, position)
 
     def op_negate(self, position):
@@ -169,22 +169,22 @@ class StringValue(Value):
 
     def op_lt(self, other, position):
         if isinstance(other, StringValue):
-            return StringValue(self.value < other.value)
+            return BooleanValue(self.value < other.value)
         self.invalid_operation('<', other, position)
 
     def op_gt(self, other, position):
         if isinstance(other, StringValue):
-            return StringValue(self.value > other.value)
+            return BooleanValue(self.value > other.value)
         self.invalid_operation('>', other, position)
 
     def op_lte(self, other, position):
         if isinstance(other, StringValue):
-            return StringValue(self.value <= other.value)
+            return BooleanValue(self.value <= other.value)
         self.invalid_operation('<=', other, position)
 
     def op_gte(self, other, position):
         if isinstance(other, StringValue):
-            return StringValue(self.value >= other.value)
+            return BooleanValue(self.value >= other.value)
         self.invalid_operation('>=', other, position)
 
     def __repr__(self) -> str:
