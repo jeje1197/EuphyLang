@@ -4,6 +4,7 @@ TOKEN_KEYWORD = 'keyword'
 TOKEN_IDENTIFIER = 'identifier'
 TOKEN_OPERATOR = 'operator'
 TOKEN_SEPARATOR = 'separator'
+TOKEN_PROCESSOR = 'processor'
 TOKEN_EOF = 'eof'
 
 class Token:

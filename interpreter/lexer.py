@@ -11,7 +11,7 @@ BEGIN_SYMBOL_CHARACTERS = string.ascii_letters + '_'
 SYMBOL_CHARACTERS = string.ascii_letters + '_' + string.digits
 
 KEYWORDS = [
-    'boolean', 'number', 'string', 'dynamic', 'function', 'list', 'table',
+    'none', 'boolean', 'number', 'string', 'dynamic', 'function', 'list', 'table',
 
     'print', 
     
@@ -23,8 +23,8 @@ KEYWORDS = [
 
     'class'
 ]
-TWO_CHAR_OPERATORS = ['<=', '>=', '==', '!=', '&&', '||']
-SINGLE_CHAR_OPERATORS = ['+', '-', '*', '/', '%', '<', '>', '=', '.']
+TWO_CHAR_OPERATORS = ['<=', '>=', '==', '!=', '&&', '||', '->']
+SINGLE_CHAR_OPERATORS = ['+', '-', '*', '/', '%', '<', '>', '=', '.', '!']
 SEPARATORS = [',', ':', ';', '(', ')', '{', '}', '[', ']']
 
 ESCAPE_CHARS = {
@@ -77,6 +77,8 @@ class Lexer:
                 self.get_next()
             elif next_two == '//': # Scan comments
                 self.skip_comment()
+            elif cur == '#': # Define processor
+                self.scan_processor()
             elif cur in DIGITS: # Scan number
                 self.scan_number()
             elif cur == '"':    # Scan string
@@ -97,6 +99,15 @@ class Lexer:
     def skip_comment(self) -> None:
         while self.cur and self.cur != '\n':
             self.get_next()
+
+    def scan_processor(self) -> None:
+        self.get_next()
+
+        processor_name = ''
+        while self.cur and self.cur in BEGIN_SYMBOL_CHARACTERS:
+            processor_name += self.cur
+            self.get_next()
+        self.create_token(TOKEN_PROCESSOR, processor_name)
 
     def scan_number(self) -> None:
         number_literal = ''

@@ -7,12 +7,14 @@ from .container import Container
 
 
 DEFAULT_DYNAMIC_VALUE = NoneValue()
+DEFAULT_NONE_VALUE = NoneValue()
 DEFAULT_BOOLEAN_VALUE = BooleanValue('false')
 DEFAULT_NUMBER_VALUE  = NumberValue(0)
 DEFAULT_STRING_VALUE  = StringValue('')
 
 DEFAULT_VALUES = {
     'dynamic': DEFAULT_DYNAMIC_VALUE,
+    'none': DEFAULT_NONE_VALUE,
     'boolean': DEFAULT_BOOLEAN_VALUE,
     'number': DEFAULT_NUMBER_VALUE,
     'string': DEFAULT_STRING_VALUE
@@ -26,6 +28,9 @@ class Runtime:
         self.should_continue = False
         self.should_return = False
         self.return_value = NoneValue()
+
+        self.cast_control_references = {}
+        self.casted_value = None
 
     def insert_native_data(self, global_symbol_table: SymbolTable):
         for package in native_data:
@@ -131,7 +136,9 @@ class Runtime:
         if node.expression:
             value = self.visit(node.expression, symbol_table)
             if declared_type != 'dynamic' and declared_type != value.type:
-                raise RuntimeException(f'\'{node.name}\' expects type {declared_type}, but received type {value.type} at {node.position}')
+                if not self.process_cast(value, declared_type, symbol_table, node.position):
+                    raise RuntimeException(f'\'{node.name}\' expects type {declared_type}, but received type {value.type} at {node.position}')
+                value = self.get_casted_value()
         else:
             value = DEFAULT_VALUES[node.data_type]
     
@@ -148,8 +155,10 @@ class Runtime:
         new_value = self.visit(node.expression, symbol_table)
 
         declared_type = container.get_data_type()
-        if declared_type != 'dynamic' and declared_type != new_value.type:
-            raise RuntimeException(f'\'{node.name}\' expects type {declared_type}, but received type {new_value.type} at {node.position}')
+        if declared_type != 'dynamic' and declared_type != value.type:
+            if not self.process_cast(new_value, declared_type, symbol_table, node.position):
+                raise RuntimeException(f'\'{node.name}\' expects type {declared_type}, but received type {value.type} at {node.position}')
+            value = self.get_casted_value()
         container.update_value(new_value)
         return None
 
@@ -234,12 +243,50 @@ class Runtime:
             if self.should_return:
                 return_value = self.return_value
                 self.return_value = NoneValue()
+                self.should_break = False
+                self.should_continue = False
+                self.should_return = False
                 if function.return_type != 'dynamic' and function.return_type != return_value.type:
                     raise RuntimeException(f'Function \'{function.name}\' should return type {function.return_type}, but received type {return_value.type} at {node.position}')
                 return return_value
 
         return NoneValue()
     
+    def invoke_function(self, values: list, function, symbol_table: SymbolTable, position):
+        # Check number of args
+        parameter_count = len(function.parameters)
+        arg_count = len(values)
+        if parameter_count != arg_count:
+            raise RuntimeException(f'Function {function.name} expected {parameter_count} args, but received {arg_count} at {position}')
+
+        # Check type of args
+        new_symbol_table = SymbolTable(symbol_table)
+        for i in range(len(values)):
+            parameter_type = function.parameters[i][0]
+            key = function.parameters[i][1]
+            if parameter_type != 'dynamic' and parameter_type != values[i].type:
+                raise RuntimeException(f'Function \'{function.name}\' arg {i} expects type {parameter_type}, but received type {values[i].type} at {position}')
+            container = Container(parameter_type, values[i])
+            new_symbol_table.insert(key, container)
+
+        if function.is_native:
+            return function.native_function(new_symbol_table)
+
+        # Execute statements
+        for statement in function.statements:
+            self.visit(statement, new_symbol_table)
+            if self.should_return:
+                return_value = self.return_value
+                self.return_value = NoneValue()
+                self.should_break = False
+                self.should_continue = False
+                self.should_return = False
+                if function.return_type != 'dynamic' and function.return_type != return_value.type:
+                    raise RuntimeException(f'Function \'{function.name}\' should return type {function.return_type}, but received type {return_value.type} at {position}')
+                return return_value
+
+        return NoneValue()
+
     def visit_ReturnNode(self, node: ReturnNode, symbol_table: SymbolTable):
         self.should_return = True
 
@@ -248,6 +295,42 @@ class Runtime:
         else:
             self.return_value = NoneValue()
         return None
+    
+    def generate_cast_id(self, datatype1, datatype2):
+        cast_id = f'{datatype1}->{datatype2}'
+        return cast_id
+    
+    def visit_CastControlNode(self, node: CastControlNode, symbol_table: SymbolTable):
+        cast_id = self.generate_cast_id(node.datatype1, node.datatype2)
+        if node.activate:
+            function = self.visit(node.expression, symbol_table)
+            if not (isinstance(function, FunctionValue)):
+                raise RuntimeException(f'{function.type} is not callable at {node.position}')
+            function: FunctionValue
+    
+            if len(function.parameters) != 1:
+                raise RuntimeException(f'Cast control reference should only take one argument at {node.position}')
+            elif function.parameters[0][0] != node.datatype1:
+                raise RuntimeException(f'Cast control reference should take a(n) {node.datatype1} at {node.position}')
+            elif not function.return_type == node.datatype2:
+                raise RuntimeException(f'Cast control reference should return type {node.datatype2} {node.position}')
+            self.cast_control_references[cast_id] = function
+        else:
+            del self.cast_control_references[cast_id]
+        return None
+    
+    def process_cast(self, value: Value, expected_type, symbol_table, position):
+        cast_id = self.generate_cast_id(value.type, expected_type)
+        function = self.cast_control_references.get(cast_id)
+        if not function:
+            return False
+
+        self.casted_value = self.invoke_function([value], function, symbol_table, position)
+        return True
+    
+    def get_casted_value(self):
+        return self.casted_value
+
     
     def visit_ClassDeclarationNode(self, node: ClassDeclarationNode, symbol_table: SymbolTable):
         if symbol_table.find(node.name):

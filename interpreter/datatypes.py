@@ -53,6 +53,9 @@ class Value:
 
     def op_or(self, other, position):
         return BooleanValue(self.is_truthy() or other.is_truthy())
+    
+    def op_not(self):
+        return BooleanValue(not self.is_truthy())
 
 
 class NoneValue(Value):

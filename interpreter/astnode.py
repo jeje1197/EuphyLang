@@ -160,6 +160,17 @@ class ReturnNode(AstNode):
     def __repr__(self) -> str:
         return f'(ReturnNode {self.expression})'
     
+class CastControlNode(AstNode):
+    def __init__(self, activate, datatype1, datatype2, expression) -> None:
+        super().__init__()
+        self.activate = activate
+        self.datatype1 = datatype1
+        self.datatype2 = datatype2
+        self.expression = expression
+
+    def __repr__(self) -> str:
+        return f'(CastControlNode {"activate" if self.activate else "deactivate"} {self.datatype1} -> {self.datatype2})'
+    
 class ClassDeclarationNode(AstNode):
     def __init__(self, name, inheritance_list, statements) -> None:
         super().__init__()

@@ -63,6 +63,14 @@ class Parser:
     def matchSeparators(self, separators):
         if not self.cur: return False
         return self.cur.type == TOKEN_SEPARATOR and self.cur.value in separators
+    
+    def matchProcessor(self, processor):
+        if not self.cur: return False
+        return self.cur.type == TOKEN_PROCESSOR and self.cur.value == processor
+    
+    def matchProcessor(self, processors):
+        if not self.cur: return False
+        return self.cur.type == TOKEN_PROCESSOR and self.cur.value in processors
 
     def generate_ast(self):
         statements = self.statements()
@@ -96,8 +104,10 @@ class Parser:
             return self.continue_statement()
         elif self.matchKeyword('return'):
             return self.return_statement()
-        elif self.matchKeyword('class'):
-            return self.class_declaration()
+        elif self.matchProcessor(['cast', 'uncast']):
+            return self.cast_control()
+        # elif self.matchKeyword('class'):
+        #     return self.class_declaration()
 
         
         
@@ -284,6 +294,35 @@ class Parser:
         expression = self.expression()
         return ReturnNode(expression).set_position(token.position)
     
+    def cast_control(self):
+        token = self.cur
+        
+        activate = True
+        if token.value == 'uncast':
+            activate = False
+        self.get_next()
+
+        datatype1 = self.parse_type()
+        if not datatype1:
+            raise ParseException(f'Expected type name at {self.cur.position}')
+
+        if not self.matchOperator('->'):
+            raise ParseException(f'Expected \'{"->"}\' at {self.cur.position}')
+        self.get_next()
+
+        datatype2 = self.parse_type()
+        if not datatype2:
+            raise ParseException(f'Expected type name at {self.cur.position}')
+        
+        expression = None
+        if activate:
+            expression = self.expression()
+            if not expression:
+                raise ParseException(f'Expected expression at {token.position}')
+
+        return CastControlNode(activate, datatype1, datatype2, expression).set_position(token.position)
+
+    
     def class_declaration(self):
         token = self.cur
         self.get_next()
@@ -369,7 +408,7 @@ class Parser:
 
     def atom(self):
         token = self.cur
-        if self.matchOperators(['+', '-']):
+        if self.matchOperators(['+', '-', '!']):
             return self.unary_op()
         elif self.match(TOKEN_NUMBER):
             self.get_next()

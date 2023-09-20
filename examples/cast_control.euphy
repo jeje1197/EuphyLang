@@ -1,0 +1,16 @@
+string converter(number n) {
+    if (n < 0) {
+        return "A negative value"
+    } else if (n == 0) {
+        return "Zero"
+    } else {
+        return "A positive value"
+    }
+}
+
+#cast number -> string converter
+
+string value = 64
+print(value)
+
+#uncast number -> string
