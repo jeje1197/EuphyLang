@@ -44,7 +44,7 @@ Requirements:
 1) Python 3. [Download it here](https://www.python.org/downloads)
 
 Guide:
-1) Clone the repository locally to your computer.
+1) Clone the repository locally to your computer. Alternatively, you can download and unzip the project.
 
    ```
    git clone https://github.com/jeje1197/EuphyLang.git
