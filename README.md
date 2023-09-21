@@ -32,7 +32,7 @@ print(value)
 #uncast number -> string
 ```
 
-Version: 1.0
+Version: 0.0.1
 
 It is currently in development and open to contibution.
 
