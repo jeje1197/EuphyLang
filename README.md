@@ -1,17 +1,24 @@
 # EuphyLang
 
-Euphy is a general-purpose programming language created by Joseph Evans.
-It serves as a prototype for a system that allows developers to use both static and dynamic
-types and define how they interact.
+Euphy is a general-purpose, multi-paradigm programming language created by Joseph Evans. It serves as a prototype that allows developers to use both static and dynamic
+types in their programs and define how they interact. EuphyLang is currently in development and open to contibution.
+
+Version: 0.0.1
 
 
 **If you want to try EuphyLang now, check out the [Getting Started](#getting-started) section.**
 
+**If you want to contribute to EuphyLang, check out the [Contribution](#contribution) section.**
 
-### Static and Dynamic Typing
-<hr/>
+<br/>
 
-Statically-Typed Variables
+## Static and Dynamic Typing
+
+
+In Euphy, you get your choice between statically-typed variables and dynamically-typed variables.
+
+A statically-typed variable can be declared as follows. Once a variable has been declared with a type, it can no longer accept values of a different type. 
+This helps to ensure program correctness.
 ```
 string s = "A string"
 print(s)
@@ -19,7 +26,10 @@ print(s)
 s = 24 // Type error
 ```
 
-Dynamically-Typed Variables
+
+
+To declare a dynamically-typed variable use the dynamic keyword. Variables declared this way will accept values of any type. This can be helpful for writing code in 
+the early stages of a project.
 ```
 dynamic d = "A string"
 print(d)
@@ -28,11 +38,10 @@ d = 24 // Valid code
 ```
 
 
-### Defining Cast Behavior
+## Defining Cast Behavior
 
-<hr/>
 An unique feature of Euphy is cast controlling - the ability to choose when and how an
-implicit casting occurs. Take a look at the following example:
+implicit casting occurs. Take a look at the following example. Can you guess what the output is here?
 
 ```
 string converter(number n) {
@@ -52,10 +61,8 @@ print(value)
 
 #uncast number -> string
 ```
+The output is "A positive value". In the above program, we used a macro-like syntax to reference a processor function that is called on the value when a string variable is passed a number value. After the print, we dereference the function.
 
-Version: 0.0.1
-
-It is currently in development and open to contibution.
 
 
 ## Getting Started
@@ -89,3 +96,10 @@ Guide:
    ```
    -r hello_world.euphy
    ```
+
+## Contribution
+
+You can contribute to EuphyLang in the following ways:
+- Making changes and opening a pull request
+- Writing a few test programs
+- Reporting bugs
