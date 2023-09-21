@@ -34,8 +34,7 @@ print(value)
 
 Version: 1.0
 It is currently in development and open to contibution.
-\
-Discord: https://discord.gg/Yck2Y9zNw
+
 
 ## Getting Started
 
