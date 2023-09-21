@@ -8,6 +8,22 @@ types and define how they interact.
 **If you want to try EuphyLang now, check out the [Getting Started](#getting-started) section.**
 
 
+Statically-Typed Variables
+```
+string s = "A string"
+print(s)
+
+s = 24 // Type error
+```
+
+Dynamically-Typed Variables
+```
+dynamic d = "A string"
+print(d)
+
+d = 24 // Valid code
+```
+
 An unique feature of Euphy is cast controlling - the ability to choose when and how an
 implicit casting occurs. Take a look at the following example:
 
